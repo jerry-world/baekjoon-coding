@@ -1,49 +1,49 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-// 풀이점수 : D
-class Solution {
+public class Solution {
     public int solution(int n, int[][] wires) {
-        //인접리스트 구성
-        List<Integer>[] g = new ArrayList[n + 1];
-        // Integer 리스트 배열 초기화
-        for (int i = 0; i <= n; i++) {
-            g[i] = new ArrayList<>();
+        List<Integer>[] graph = new ArrayList[n + 1];
+
+        for (int i = 1; i <= n; i++) {
+            graph[i] = new ArrayList<>();
         }
-        //정방향과 역방향 모두 인접리스트에 추가한다.
+
+        //인접 리스트 생성
         for (int[] wire : wires) {
-            int u = wire[0];
-            int v = wire[1];
-            g[u].add(v);
-            g[v].add(u);
+            int a = wire[0];
+            int b = wire[1];
+            graph[a].add(b);
+            graph[b].add(a);
         }
 
-        //1과 나머지로 분리될 worst 케이스
-        int answer = n - 1;
+        int result = Integer.MAX_VALUE;
 
-        // 모든 간선 (u,v)에 대해 그 간선을 끊었다고 가정하고 진행
-        for (int[] w : wires) {
-            int u = w[0];
-            int v = w[1];
+        for (int i = 0; i < wires.length; i++) {
+            int a = wires[i][0];
+            int b = wires[i][1];
 
             boolean[] visited = new boolean[n + 1];
+            int cnt = dfs(a, a, b, visited, graph);
 
-            int sizeA = dfs(u, visited, g, u, v);
-            int sizeB = n - sizeA;
-            answer = Math.min(answer, Math.abs(sizeA - sizeB));
-
+            int diff = Math.abs(n - 2 * cnt);
+            result = Math.min(diff, result);
         }
 
-        return answer;
+        return result;
     }
 
-    private int dfs(int cur, boolean[] visited, List<Integer>[] g, int u, int v) {
-        visited[cur] = true;
+    private int dfs(int now, int blockA, int blockB, boolean[] visited, List<Integer>[] graph) {
+        visited[now] = true;
         int cnt = 1;
 
-        for (Integer nxt : g[cur]) {
-            if((cur == u && nxt == v) || (cur == v && nxt == u)) continue;
-            if(!visited[nxt]) cnt += dfs(nxt, visited, g, u, v);
+        for (Integer next : graph[now]) {
+            if((blockA == now && next == blockB) || (blockA == next && blockB == now)) continue;
+            if(!visited[next]){
+                visited[next] = true;
+                cnt += dfs(next, blockA, blockB, visited, graph);
+            }
         }
 
         return cnt;
