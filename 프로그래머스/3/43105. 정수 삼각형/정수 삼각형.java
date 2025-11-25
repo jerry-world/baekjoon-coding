@@ -1,27 +1,22 @@
-import java.util.*;
-
 class Solution {
     public int solution(int[][] triangle) {
-
-        //삼각형의 높이는 최대 500
-        int[][] memo = new int[501][501];
-        for (int[] ints : memo) {
-            Arrays.fill(ints, -1);
+        //좌측끝, 우측끝 계산후, 가운데 계산
+        for (int i = 1; i < triangle.length; i++) {
+            triangle[i][0] = triangle[i][0] + triangle[i - 1][0];
+            triangle[i][i] = triangle[i][i] + triangle[i-1][i-1];
         }
 
-        return getMaxSum(0, 0, triangle, memo);
-    }
-
-    private int getMaxSum(int y, int x, int[][] triangle, int[][] memo) {
-        if (y == triangle.length - 1) {
-            return triangle[y][x];
+        for (int i = 2; i < triangle.length; i++) {
+            for (int j = 1; j < i; j++) {
+                triangle[i][j] = triangle[i][j] + Math.max(triangle[i-1][j-1], triangle[i-1][j]);
+            }
         }
 
-        if (memo[y][x] != -1) return memo[y][x];
+        int max = 0;
+        for (int i = 0; i < triangle[triangle.length - 1].length; i++) {
+            max = Math.max(max, triangle[triangle.length - 1][i]);
+        }
 
-        int down = getMaxSum(y + 1, x, triangle, memo);
-        int downRight = getMaxSum(y + 1, x + 1, triangle, memo);
-
-        return memo[y][x] = triangle[y][x] + Math.max(down, downRight);
+        return max;
     }
 }
