@@ -1,32 +1,26 @@
-import java.util.LinkedList;
-import java.util.Queue;
-
 public class Solution {
+    static boolean[] visited;
+    static int[] numbers;
+    static int target;
+    static int correctNum;
 
     public int solution(int[] numbers, int target) {
-        Queue<int[]> q = new LinkedList<>();
+        this.target = target;
+        this.numbers = numbers;
+        this.visited = new boolean[numbers.length];
 
-        q.offer(new int[]{numbers[0], 0});
-        q.offer(new int[]{-numbers[0], 0});
+        dfs(0, 0);
 
-        int count = 0;
-        while (!q.isEmpty()) {
-            int[] now = q.poll();
-            int val = now[0];
-            int idx = now[1];
-            if (val == target && idx == numbers.length - 1) {
-                count++;
-                continue;
-            }
-            if (idx == numbers.length - 1) {
-                continue;
-            }
+        return correctNum;
+    }
 
-            q.offer(new int[]{val + numbers[idx + 1], idx + 1});
-            q.offer(new int[]{val - numbers[idx + 1], idx + 1});
+    private void dfs(int idx, int now) {
+        if (idx == numbers.length) {
+            if (now == target) correctNum++;
+            return;
         }
-
-        return count;
+        dfs(idx + 1, now + numbers[idx]);
+        dfs(idx + 1, now - numbers[idx]);
     }
 
 }
